@@ -20,6 +20,6 @@ export const appRouter = (app,express)=>{
         return next(new Error("Page not found"),{cause:404})
     })
     app.use((err,req,res,next)=>{
-        return res.status(err.cause || 500).json({success:false,message:err.message,stack:err.stack})
+        return res.status(err.cause || 500).json({success:false,message:err.message})
     })
 }
