@@ -53,7 +53,7 @@ export const login = asyncHandler(async(req,res,next)=>{
     await user.save()
     const token = jwt.sign({email:user.email,id:user._id,role:user.role},process.env.SECRET_KEY,{expiresIn:"2d"})
     await Token.create({token,userId:user._id,agent})
-    return res.status(200).json({success:true,token,server:process.env.NODE_ENV})
+    return res.status(200).json({success:true,token})
 })
 
 export const sendForgetCode = asyncHandler(async(req, res, next) => {
