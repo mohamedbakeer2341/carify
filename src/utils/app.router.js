@@ -5,6 +5,13 @@ import favoriteRouter from '../modules/favorite/favorite.router.js'
 
 export const appRouter = (app,express)=>{
     app.use(express.json())
+    app.use((req, res, next)=>{
+        res.setHeader("Access-Control-Allow-Origin", "*")
+        res.setHeader("Access-Control-Allow-Methods", "*")
+        res.setHeader("Access-Control-Allow-Headers", "*")
+        res.setHeader("Access-Control-Allow-Private-Network", true)
+        return next()
+    })
     app.use('/auth', authRouter)
     app.use('/brand', brandRouter)
     app.use('/car', carRouter)
