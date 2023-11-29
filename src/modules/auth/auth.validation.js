@@ -25,14 +25,14 @@ export const sendForgetCodeSchema = joi.object({
 
 export const resetPasswordSchema = joi.object({
     email:joi.string().email({minDomainSegments:2,tlds:{allow:["com","net"]}}).lowercase().required(),
-    password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+    password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,30}$')).required(),
     cPassword: joi.string().valid(joi.ref("password")).required().messages({"any.only":"Passwords do not match !"}),
     forgetCode:joi.string().required()
 }).required()
 
 export const changePasswordSchema = joi.object({
     oldPassword:joi.string().required(),
-    newPassword:joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,30}$')).required(),
+    newPassword:joi.string().pattern(new RegExp('^[a-zA-Z0-9]{8,30}$')).required().messages({"string.pattern.base":"Password must be at least 8 characters long"}),
     cNewPassword:joi.string().valid(joi.ref("newPassword")).required().messages({"any.only":"Passwords do not match !"}),
 }).required()
 
