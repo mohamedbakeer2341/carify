@@ -133,6 +133,8 @@ export const uploadProfilePicture = asyncHandler(async(req,res,next)=>{
     const {id} = req.payload
     const user = await Auth.findById(id)
     if(!user) return next(new Error("User not found !",{cause:404}))
+    console.log(req.file)
+    if(!req.file) return next(new Error("File not found !",{cause:404}))
     const result = await cloudinary.uploader.upload(req.file.path,{folder:'/project/user',public_id:id})
     user.profilePicture = result.secure_url
     await user.save()
