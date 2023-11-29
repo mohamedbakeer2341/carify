@@ -24,6 +24,10 @@ const brandSchema = new Schema({
         type:String,
         default:null
     },
+    __v:{
+        type:Number,
+        select:false
+    }
 },
 {timestamps:true})
 

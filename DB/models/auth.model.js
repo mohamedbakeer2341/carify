@@ -42,6 +42,10 @@ const authSchema = new Schema({
     role:{
         type:String,
         enum:["admin","user"]
+    },
+    __v:{
+        type:Number,
+        select:false
     }
 },
 {

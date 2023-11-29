@@ -46,7 +46,11 @@ const carSchema = new Schema({
     co2Emissions:String,
     yearsOfProduction:[Number],
     frontBreaks:String,
-    rearBreaks:String
+    rearBreaks:String,
+    __v:{
+        type:Number,
+        select:false
+    }
 },{
     timestamps:true
 })
