@@ -51,7 +51,7 @@ export const login = asyncHandler(async(req,res,next)=>{
     if(!isMatched) return next(new Error("Incorrect password !",{cause:401}))
     user.status = "online"
     await user.save()
-    const token = jwt.sign({email:user.email,id:user._id,role:user.role},process.env.SECRET_KEY)
+    const token = jwt.sign({email:user.email,id:user._id,role:user.role},process.env.SECRET_KEY,{expiresIn:"2d"})
     await Token.create({token,userId:user._id,agent})
     return res.status(200).json({success:true,token})
 })
