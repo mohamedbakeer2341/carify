@@ -128,7 +128,7 @@ export const changeAccountDetails = asyncHandler(async(req,res,next)=>{
     if(!user) return next(new Error("User not found !",{cause:404}))
     return res.status(200).json({sucess:true,message:"Account details updated successfully"})
 })
-
+//check if profile picture replaced in the cloud
 export const uploadProfilePicture = asyncHandler(async(req,res,next)=>{
     const {id} = req.payload
     const user = await Auth.findById(id)

@@ -29,6 +29,9 @@ export const deleteCar = asyncHandler(async (req, res, next)=>{
     const {id} = req.params
     const car = await Car.findByIdAndDelete(id)
     if(!car) return next(new Error("Car not found !",{cause:404}))
+    const public_id = "project" + car.image.split("/project")[1].split(".")[0]
+    console.log(public_id)
+    const cloud = await cloudinary.uploader.destroy(public_id)
     return res.status(200).json({success:true,message:"Car deleted successfully !"})
 })
 
@@ -36,6 +39,7 @@ export const editCar = asyncHandler(async (req, res, next)=>{
     const {id} = req.params
     const car = await Car.findByIdAndUpdate(id,req.body)
     if(!car) return next(new Error("Car not found !",{cause:404}))
+    const cloud = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:id})
     return res.status(200).json({success:true,message:"Car updated successfully !"})
 })
 
