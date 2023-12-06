@@ -1,77 +1,66 @@
 export const sendActivationLinkTemp = ({activationLink,name})=>{
-    const html = `
-    <!DOCTYPE html>
-<html>
-<head>
-    <title>Account Activation</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-        }
-        .container {
-            width: 80%;
-            margin: auto;
-            background-color: #f8f9fa;
-            padding: 20px;
-            border-radius: 5px;
-            display: flex;
-            flex-direction: column;
-            align-items: flex-start;
-            text-align: left;
-        }
-        .top-bar {
-          background-color: #007bff;
-          height: 60px;
-          color: white;
-          text-align: center;
-          padding: 20px 0 0  ;
-          font-weight: bold;
-          font-size: 40px;
-          width: 100%;
-      }
-        .button-container {
-            width: 100%;
-            text-align: center;
-        }
-        a.button {
-            display: inline-block;
-            color: white;
-            background-color: #007bff;
-            padding: 12px 20px;
-            margin: 20px 0;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        a.link {
-            color: #007bff;
-            text-decoration: none;
-        }
-        a.link:hover {
-            color: #0056b3;
-            text-decoration: underline;
-        }
-        strong {
-            font-size:20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="top-bar">Account Activation</div>
-        <h2>Hello ${name},</h2>
-        <p>Thank you for registering on our site. Please click on the button or the link below to activate your account:</p>
-        <div class="button-container">
-            <a href="${activationLink}" class="button">Activate Account</a>
-        </div>
-        <p>Or copy and paste this link into your browser:</p>
-        <p><a href="${activationLink}" class="link">${activationLink}</a></p>
-        <p>If you did not register on our site, please ignore this email.</p>
-        <p>Best,</p>
-        <strong>Carify</strong>
-    </div>
-</body>
-</html>
-`
+    const html = `<!DOCTYPE html>
+    <html>
+    <head>
+        <title>Account Activation</title>
+        <style>
+            .header {
+                background-color: #007bff;
+                color: white;
+                padding: 20px;
+                text-align: center;
+                font-size: 20px;
+                font-weight: bold;
+            }
+    
+            .button {
+                display: inline-block;
+                background-color: #007bff;
+                color: white;
+                padding: 12px 20px;
+                text-decoration: none;
+                border-radius: 5px;
+                margin: 10px 0;
+            }
+    
+            .button-container {
+                text-align: center;
+            }
+    
+            .link {
+                color: #007bff;
+                text-decoration: none;
+            }
+    
+            .link:hover {
+                color: #0056b3;
+                text-decoration: underline;
+            }
+        </style>
+    </head>
+    <body>
+        <table width="100%" border="0" cellspacing="0" cellpadding="0">
+            <tr>
+                <td class="header">Account Activation</td>
+            </tr>
+            <tr>
+                <td>
+                    <h2>Hello ${name},</h2>
+                    <p>Thank you for registering on our site. Please click on the button or the link below to activate your account:</p>
+                    <div class="button-container">
+                        <a href="${activationLink}" class="button">Activate Account</a>
+                    </div>
+                    <p>Or copy and paste this link into your browser:</p>
+                    <p><a href="${activationLink}" class="link">${activationLink}</a></p>
+                    <p>If you did not register on our site, please ignore this email.</p>
+                    <p>Best,</p>
+                    <strong>Carify</strong>
+                </td>
+            </tr>
+        </table>
+    </body>
+    </html>    
+    `
   return html
 }
 export const accountActivatedTemp = (name)=>{
