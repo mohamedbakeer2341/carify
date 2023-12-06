@@ -45,7 +45,7 @@ export const addCar = asyncHandler(async (req, res, next)=>{
     const brand = await Brand.findOne({name:brandName})
     if(!brand) return next(new Error("Brand not found !",{cause:404}))
     const car = await Car.create({brandId:brand._id,...data})
-    const image = cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:car._id})
+    const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:car._id})
     car.image = image
     await car.save()
     return res.status(200).json({sucess:true,message:"Car added sucessfully !",car})
