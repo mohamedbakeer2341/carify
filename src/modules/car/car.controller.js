@@ -2,6 +2,7 @@ import { Car } from "../../../DB/models/car.model.js";
 import { asyncHandler } from "../../utils/asyncHandler.js";
 import { paginate } from "../../utils/paginate.js";
 import { Brand } from "../../../DB/models/brand.model.js";
+import cloudinary from "../../utils/cloud.js";
 
 export const getFilteredCars = asyncHandler(async (req, res, next) => {
     const { sort, brandName, offset, limit} = req.query
@@ -40,9 +41,13 @@ export const editCar = asyncHandler(async (req, res, next)=>{
 
 export const addCar = asyncHandler(async (req, res, next)=>{
     const {brandName, ...data} = req.body
+    if(!req.file) return next(new Error("Image not found !",{cause:404}))
     const brand = await Brand.findOne({name:brandName})
     if(!brand) return next(new Error("Brand not found !",{cause:404}))
     const car = await Car.create({brandId:brand._id,...data})
-    return res.status(200).json({sucess:true,message:"Car added sucessfully !"})
+    const image = cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:car._id})
+    car.image = image
+    await car.save()
+    return res.status(200).json({sucess:true,message:"Car added sucessfully !",car})
 })
 
