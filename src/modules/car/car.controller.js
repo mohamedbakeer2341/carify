@@ -46,7 +46,7 @@ export const addCar = asyncHandler(async (req, res, next)=>{
     if(!brand) return next(new Error("Brand not found !",{cause:404}))
     const car = await Car.create({brandId:brand._id,...data})
     const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:car._id})
-    car.image = image
+    car.image = image.secure_url
     await car.save()
     return res.status(200).json({sucess:true,message:"Car added sucessfully !",car})
 })
