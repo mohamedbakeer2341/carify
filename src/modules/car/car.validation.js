@@ -1,7 +1,6 @@
 import joi from "joi"
 
 export const addCarSchema = joi.object({
-    id: joi.string().required(),
     brandName: joi.string().min(3).max(30).required(),
     name: joi.string().required(),
     gearBox : joi.string().required(),
@@ -32,11 +31,4 @@ export const editCarSchema = joi.object({
 
 export const deleteCarSchema = joi.object({
     id : joi.string().required(),
-})
-
-export const getFilteredCarsSchema = joi.object({
-    sort : joi.string().valid("date","price","sales"),
-    brandName : joi.string(),
-    offset: joi.number(),
-    limit: joi.number()
 })

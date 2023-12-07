@@ -2,6 +2,7 @@ import authRouter from '../modules/auth/auth.router.js'
 import brandRouter from '../modules/brand/brand.router.js'
 import carRouter from '../modules/car/car.router.js'
 import favoriteRouter from '../modules/favorite/favorite.router.js'
+import  usedCarRouter  from "../modules/usedCar/usedCar.router.js"
 
 export const appRouter = (app,express)=>{
     app.use(express.json())
@@ -16,6 +17,7 @@ export const appRouter = (app,express)=>{
     app.use('/brand', brandRouter)
     app.use('/car', carRouter)
     app.use('/favorite', favoriteRouter)
+    app.use('/used-car', usedCarRouter)
     app.all('*', (req,res,next)=>{
         return next(new Error("Page not found"),{cause:404})
     })

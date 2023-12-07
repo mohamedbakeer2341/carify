@@ -8,7 +8,7 @@ export const validate = (schema)=>{
     return (req,res,next)=>{
         const validationResult = schema.validate({...req.body,...req.query,...req.params},{abortEarly:false});
         if(validationResult.error)
-            return next(new Error(validationResult.error))
+            return next(new Error(validationResult.error,{cause:422}))
         return next()
     }
 }

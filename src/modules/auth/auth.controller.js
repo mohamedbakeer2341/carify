@@ -23,7 +23,7 @@ export const signUp = asyncHandler(async(req,res,next)=>{
     const mail = await sendEmail({
         to:email,
         subject:"Email Activation",
-        html:sendActivationLinkTemp({activationLink:`http://localhost:3000/auth/activation/${activationCode}`,name})
+        html:sendActivationLinkTemp({activationLink:`https://carify-iota.vercel.app/auth/activation/${activationCode}`,name})
     })
     if(!mail) return next(new Error("Email not found !",{cause:404}))
     const result = await Auth.create({firstName,lastName,email,password:hashedPassword,activationCode,role,gender,profilePicture})

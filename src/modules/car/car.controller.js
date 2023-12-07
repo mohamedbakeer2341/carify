@@ -5,7 +5,7 @@ import { Brand } from "../../../DB/models/brand.model.js";
 import cloudinary from "../../utils/cloud.js";
 
 export const getFilteredCars = asyncHandler(async (req, res, next) => {
-    const { sort, brandName, offset, limit} = req.query
+    const { sort, brandName, offset, limit } = req.query
     const {role} = req.payload
     const query = {}
     const sortOptions = {
@@ -22,7 +22,7 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
     }
     const result = await paginate({model:Car, selectFields: role == "admin" ? "" : "-_id", sort:sortBy, query, offset, limit})
     if(!result) return next(new Error("No cars found !",{cause:404}));
-    return res.json({sucess:true,result})
+    return res.status(200).json({sucess:true,result})
 })
 
 export const deleteCar = asyncHandler(async (req, res, next)=>{
@@ -30,8 +30,7 @@ export const deleteCar = asyncHandler(async (req, res, next)=>{
     const car = await Car.findByIdAndDelete(id)
     if(!car) return next(new Error("Car not found !",{cause:404}))
     const public_id = "project" + car.image.split("/project")[1].split(".")[0]
-    console.log(public_id)
-    const cloud = await cloudinary.uploader.destroy(public_id)
+    const image = await cloudinary.uploader.destroy(public_id)
     return res.status(200).json({success:true,message:"Car deleted successfully !"})
 })
 
@@ -39,7 +38,9 @@ export const editCar = asyncHandler(async (req, res, next)=>{
     const {id} = req.params
     const car = await Car.findByIdAndUpdate(id,req.body)
     if(!car) return next(new Error("Car not found !",{cause:404}))
-    const cloud = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:id})
+    const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:id})
+    car.image = image.secure_url
+    await car.save()
     return res.status(200).json({success:true,message:"Car updated successfully !"})
 })
 
@@ -52,6 +53,5 @@ export const addCar = asyncHandler(async (req, res, next)=>{
     const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:car._id})
     car.image = image.secure_url
     await car.save()
-    return res.status(200).json({sucess:true,message:"Car added sucessfully !",car})
+    return res.status(201).json({sucess:true,message:"Car added sucessfully !"})
 })
-
