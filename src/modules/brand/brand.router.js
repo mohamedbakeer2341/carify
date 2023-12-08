@@ -9,7 +9,7 @@ import { upload } from "../../utils/multer.js"
 const router = Router()
 
 router.get('/', authenticate, getBrands)
-router.post('/', authenticate, validate(addBrandSchema), authorize("admin"),addBrand)
+router.post('/', authenticate, upload().single("image"),validate(addBrandSchema), authorize("admin"),addBrand)
 router.patch('/:id', authenticate, upload().single("image"), validate(editBrandSchema), authorize("admin"),editBrand)
 router.delete('/:id', authenticate, validate(deleteBrandSchema), authorize("admin"),deleteBrand)
 
