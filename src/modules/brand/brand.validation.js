@@ -3,6 +3,7 @@ import joi from "joi"
 export const addBrandSchema = joi.object({
     name: joi.string().min(3).max(30).required(),
     country: joi.string().required(),
+    image: joi.string().required
 }).required()
 
 export const editBrandSchema = joi.object({
