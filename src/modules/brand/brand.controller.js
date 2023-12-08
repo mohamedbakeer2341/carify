@@ -6,7 +6,12 @@ import  cloudinary  from "../../utils/cloud.js"
 export const getBrands = asyncHandler(async(req,res,next)=>{
     const {offset, limit} = req.query
     const {role} = req.payload
-    const result = await paginate({selectFields: role=="admin" ? "logo name country" : "-_id logo name country",model:Brand,offset,limit})
+    const result = await paginate({
+    selectFields: role == "admin" ? "logo name country" : "-_id logo name country",
+    model:Brand, 
+    offset,
+    limit,
+    })
     if(!result.length) return next(new Error("No brands found !",{cause:404}))
     return res.status(200).json({success:true,result})
 })

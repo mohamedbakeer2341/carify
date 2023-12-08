@@ -5,9 +5,9 @@ import { Brand } from "../../../DB/models/brand.model.js";
 import cloudinary from "../../utils/cloud.js";
 
 export const getFilteredCars = asyncHandler(async (req, res, next) => {
-    const { sort, brandName, offset, limit } = req.query
+    const { sort, brandName, offset, limit, search } = req.query
     const {role} = req.payload
-    const query = {}
+    const query = { name: { $regex: search ? search : "", $options: "i" } }
     const sortOptions = {
         date: "yearsOfProduction",
         sales: "sales",
@@ -16,12 +16,19 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
     };
     const sortBy = sortOptions[sort] || sortOptions.default;
     if(brandName){
-        const brand = await Brand.findOne({name:brandName})
+        const brand = await Brand.findOne({ name:{$regex:brandName, $options: "i"}})
         if(!brand) return next(new Error("Brand not found !",{cause:404}))
         query.brandId = brand._id
     }
-    const result = await paginate({model:Car, selectFields: role == "admin" ? "" : "-_id", sort:sortBy, query, offset, limit})
-    if(!result) return next(new Error("No cars found !",{cause:404}));
+    const result = await paginate({
+        model:Car, 
+        selectFields: role == "admin" ? "" : "-_id",
+        sort:sortBy, 
+        query, 
+        offset, 
+        limit,
+    })
+    if(!result.length) return next(new Error("No cars found !",{cause:404}));
     return res.status(200).json({sucess:true,result})
 })
 
