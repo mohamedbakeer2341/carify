@@ -4,6 +4,7 @@ import { signUpSchema, activateAccountSchema, loginSchema, sendForgetCodeSchema,
 import { validate } from "../../middlewares/validation.middleware.js"
 import { authenticate } from "../../middlewares/auth.middleware.js";
 import { upload } from "../../utils/multer.js";
+import { getUserUsedCars } from "../usedCar/usedCar.controller.js";
 
 const router = Router()
 
@@ -17,5 +18,6 @@ router.patch('/account-details',validate(changeAccountDetailsSchema),authenticat
 router.get('/profile',authenticate,getProfile)
 router.patch('/profile-picture',upload().single('pp'),authenticate,uploadProfilePicture)
 router.patch('/logout',authenticate,signOut)
+router.get('/used-car/', authenticate, getUserUsedCars)
 
 export default router
