@@ -36,8 +36,8 @@ export const deleteCar = asyncHandler(async (req, res, next)=>{
     const {id} = req.params
     const car = await Car.findByIdAndDelete(id)
     if(!car) return next(new Error("Car not found !",{cause:404}))
-    const public_id = "project" + car.image.split("/project")[1].split(".")[0]
-    const image = await cloudinary.uploader.destroy(public_id)
+    const public_id = car.image.split("/project") ? "project" + car.image.split("/project")[1].split(".")[0] : null
+    if(public_id) await cloudinary.uploader.destroy(public_id)
     return res.status(200).json({success:true,message:"Car deleted successfully !"})
 })
 
