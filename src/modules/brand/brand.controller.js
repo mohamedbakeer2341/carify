@@ -20,11 +20,12 @@ export const addBrand = asyncHandler(async(req,res,next)=>{
     const {name} = req.body
     const brand = await Brand.findOne({name})
     if(brand) return next(new Error("Brand already exists !",{cause:409}))
+    if(!req.file) return next(new Error("File not found !",{cause:404}))
     const result = await Brand.create({logo:"reserved",...req.body})
     const cloud = await cloudinary.uploader.upload(req.file.path,{folder:"project/brands/image", public_id:result._id})
     result.logo = cloud.secure_url
     await result.save()
-    return res.status(201).json({success:true,message:"User added successfully !"})
+    return res.status(201).json({success:true,message:"Brand added successfully !"})
 })
 
 export const editBrand = asyncHandler(async(req,res,next)=>{
