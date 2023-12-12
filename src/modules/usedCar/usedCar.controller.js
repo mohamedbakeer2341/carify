@@ -55,16 +55,19 @@ export const getUserUsedCars = asyncHandler(async (req,res,next)=>{
 })
 
 export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
-    const {sort, offset, limit, search} = req.query
+    const {sort, offset, limit, search, type} = req.query
     const cars = await paginate({
-        sort, model:usedCar, 
+        sort, model:usedCar,
         selectFields:"-_id",
-        query:{ $or:[
+        query:{
+            $or:[
             { name:{$regex:search ? search : "", $options:'i' }}, 
             { brand:{$regex:search ? search : "", $options:'i' }}
-        ]}, 
+            ],
+            type
+        }, 
         offset, 
-        limit})
+        limit })
     if(!cars.length) return next(new Error("No used cars found !",{cause:404}))
     return res.status(200).json({sucess:true,cars})
 })
