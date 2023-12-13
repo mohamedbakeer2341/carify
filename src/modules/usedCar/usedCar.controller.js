@@ -11,6 +11,7 @@ export const addUsedCar = asyncHandler(async (req,res,next)=>{
         data.duration = duration
     }
     const car = await usedCar.create({userId:id, type, ...data})
+    if(!req.files.length) return next(new Error("Images is required",{cause:404}))
     req.files.forEach(async (file) => {
         const image = await cloudinary.uploader.upload(file.path,{folder:"project/usedCar/images/"})
         car.images.push({secure_url:image.secure_url,public_id:image.public_id})
@@ -27,7 +28,7 @@ export const editUsedCar = asyncHandler(async (req,res,next)=>{
     }
     const car = await usedCar.findByIdAndUpdate(id,{type,...data})
     if(!car) return next(new Error("Car not found !",{cause:404}))
-    if(req.files){
+    if(req.files.length){
         req.files.forEach(async (file)=>{
             const image = await cloudinary.uploader.upload(file.path,{folder:"project/usedCar/images/"})
             car.images.push({secure_url:image.secure_url,public_id:image.public_id})

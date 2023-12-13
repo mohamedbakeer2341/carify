@@ -46,9 +46,11 @@ export const editCar = asyncHandler(async (req, res, next)=>{
     const {id} = req.params
     const car = await Car.findByIdAndUpdate(id,req.body)
     if(!car) return next(new Error("Car not found !",{cause:404}))
-    const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:id})
-    car.image = image.secure_url
-    await car.save()
+    if(req.file){
+        const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:id})
+        car.image = image.secure_url
+        await car.save()
+    }
     return res.status(200).json({success:true,message:"Car updated successfully !"})
 })
 

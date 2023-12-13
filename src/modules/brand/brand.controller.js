@@ -35,9 +35,11 @@ export const editBrand = asyncHandler(async(req,res,next)=>{
     if(brandDb) return next(new Error("Brand already exists !",{cause:409}))
     const brand = await Brand.findByIdAndUpdate(id,req.body)
     if(!brand) return next(new Error("Brand not found !",{cause:404}))
+    if(req.file){
     const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/brands/image", public_id:brand._id})
     brand.logo = image.secure_url
     await brand.save()
+    }
     return res.status(200).json({sucess:true,message:"Brand updated successfully !"})
 })
 
