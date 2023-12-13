@@ -11,7 +11,7 @@ export const addCarSchema = joi.object({
     topSpeed : joi.string().required(),
     acceleration : joi.string().required(),
     fuel : joi.string().required(),
-    yearsOfProduction: joi.array().items(joi.number()).required()
+    yearsOfProduction: joi.array().items(joi.number())
 }).required()
 
 export const editCarSchema = joi.object({
