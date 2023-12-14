@@ -10,7 +10,7 @@ const router = Router()
 // router.post('/', authenticate, upload().array("images"),validate(addUsedCarSchema),addUsedCar)
 router.post('/', authenticate, upload().array("images"), validate(addUsedCarSchema), addUsedCar)
 router.get('/', authenticate, getFilteredUsedCars)
-router.patch('/:id', authenticate, validate(editUsedCarSchema), editUsedCar)
-router.delete('/:id', authenticate, upload().array("images"),validate(deleteUsedCarSchema), deleteUsedCar)
+router.patch('/:carId', authenticate, validate(editUsedCarSchema), editUsedCar)
+router.delete('/:carId', authenticate, upload().array("images"),validate(deleteUsedCarSchema), deleteUsedCar)
 
 export default router

@@ -19,6 +19,7 @@ export const addUsedCarSchema = joi.object({
 
 export const editUsedCarSchema = joi.object({
     name: joi.string().required(),
+    carId : joi.custom(isValidObjectId).required(),
     brand: joi.string().required(),
     year: joi.number().min(1960).required(),
     price: joi.number().min(0).required(),
@@ -34,5 +35,5 @@ export const editUsedCarSchema = joi.object({
 }).required()
 
 export const deleteUsedCarSchema = joi.object({
-    id: joi.custom(isValidObjectId)
-})
+    id: joi.custom(isValidObjectId).required()
+}).required()

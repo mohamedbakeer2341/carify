@@ -11,7 +11,7 @@ export const addUsedCar = asyncHandler(async (req,res,next)=>{
         data.duration = duration
     }
     const car = await usedCar.create({userId:id, type, ...data})
-    if(!req.files.length) return next(new Error("Images is required",{cause:404}))
+    if(!req.files.length) return next(new Error("Images is required !",{cause:404}))
     req.files.forEach(async (file) => {
         const image = await cloudinary.uploader.upload(file.path,{folder:"project/usedCar/images/"})
         car.images.push({secure_url:image.secure_url,public_id:image.public_id})
@@ -22,11 +22,12 @@ export const addUsedCar = asyncHandler(async (req,res,next)=>{
 
 export const editUsedCar = asyncHandler(async (req,res,next)=>{
     const {id} = req.payload
+    const {carId} = req.params
     const {duration , type , ...data} = req.body
     if(type === "rent" && duration){
         data.duration = duration
     }
-    const car = await usedCar.findByIdAndUpdate(id,{type,...data})
+    const car = await usedCar.findOneAndUpdate({_id:carId,userId:id},{type,...data})
     if(!car) return next(new Error("Car not found !",{cause:404}))
     if(req.files.length){
         req.files.forEach(async (file)=>{
@@ -40,7 +41,8 @@ export const editUsedCar = asyncHandler(async (req,res,next)=>{
 
 export const deleteUsedCar = asyncHandler(async (req,res,next)=>{
     const {id} = req.payload
-    const car = await usedCar.findOneAndDelete({userId:id})
+    const {carId} = req.params
+    const car = await usedCar.findOneAndDelete({userId:id,_id:carId})
     if(!car) return next(new Error("Car not found !",{cause:404}))
     car.images.forEach(async(image)=>{
         const result = await cloudinary.uploader.destroy(image.public_id)
@@ -59,7 +61,6 @@ export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
     const {sort, offset, limit, search, type} = req.query
     const cars = await paginate({
         sort, model:usedCar,
-        selectFields:"-_id",
         query:{
             $or:[
             { name:{$regex:search ? search : "", $options:'i' }}, 
