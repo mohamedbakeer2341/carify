@@ -13,10 +13,10 @@ export const addUsedCar = asyncHandler(async (req,res,next)=>{
     }
     if(!req.files.length) return next(new Error("Images is required !",{cause:404}))
     const car = await usedCar.create({userId:id, type, ...data})
-    req.files.forEach(async (file) => {
+    for (const file of req.files){
         const image = await cloudinary.uploader.upload(file.path,{folder:"project/usedCar/images/"})
         car.images.push({secure_url:image.secure_url,public_id:image.public_id})
-    });
+    };
     await car.save()
     return res.status(201).json({success:true,message:"Car added successfully !"})
 })
