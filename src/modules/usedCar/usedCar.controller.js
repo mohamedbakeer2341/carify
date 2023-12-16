@@ -2,6 +2,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { usedCar } from "../../../DB/models/usedCar.model.js";
 import cloudinary from "../../utils/cloud.js"
 import { paginate } from "../../utils/paginate.js"
+import { addUsedCarSchema } from "./usedCar.validation.js";
 
 export const addUsedCar = asyncHandler(async (req,res,next)=>{
     const {id} = req.payload
@@ -10,8 +11,8 @@ export const addUsedCar = asyncHandler(async (req,res,next)=>{
         if(!duration) return next(new Error("Duration is required for rent cars !",{cause:400}))
         data.duration = duration
     }
-    const car = await usedCar.create({userId:id, type, ...data})
     if(!req.files.length) return next(new Error("Images is required !",{cause:404}))
+    const car = await usedCar.create({userId:id, type, ...data})
     req.files.forEach(async (file) => {
         const image = await cloudinary.uploader.upload(file.path,{folder:"project/usedCar/images/"})
         car.images.push({secure_url:image.secure_url,public_id:image.public_id})
@@ -59,15 +60,16 @@ export const getUserUsedCars = asyncHandler(async (req,res,next)=>{
 
 export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
     const {sort, offset, limit, search, type} = req.query
+    let query = {
+        $or:[
+                { name:{$regex:search ? search : "", $options:'i' }}, 
+                { brand:{$regex:search ? search : "", $options:'i' }}
+            ],
+    }
+    if(type) query.type = type
     const cars = await paginate({
         sort, model:usedCar,
-        query:{
-            $or:[
-            { name:{$regex:search ? search : "", $options:'i' }}, 
-            { brand:{$regex:search ? search : "", $options:'i' }}
-            ],
-            type
-        }, 
+        query, 
         offset, 
         limit })
     if(!cars.length) return next(new Error("No used cars found !",{cause:404}))

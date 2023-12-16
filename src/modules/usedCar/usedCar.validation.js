@@ -35,5 +35,5 @@ export const editUsedCarSchema = joi.object({
 }).required()
 
 export const deleteUsedCarSchema = joi.object({
-    id: joi.custom(isValidObjectId).required()
+    carId: joi.custom(isValidObjectId).required()
 }).required()
