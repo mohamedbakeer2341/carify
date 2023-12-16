@@ -31,10 +31,10 @@ export const editUsedCar = asyncHandler(async (req,res,next)=>{
     const car = await usedCar.findOneAndUpdate({_id:carId,userId:id},{type,...data})
     if(!car) return next(new Error("Car not found !",{cause:404}))
     if(req.files.length){
-        req.files.forEach(async (file)=>{
+        for (const file of req.files){
             const image = await cloudinary.uploader.upload(file.path,{folder:"project/usedCar/images/"})
             car.images.push({secure_url:image.secure_url,public_id:image.public_id})
-        })
+        };
         await car.save()
     }
     return res.status(200).json({success:true,message:"Car added successfully !"})
