@@ -20,14 +20,18 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
         if(!brand) return next(new Error("Brand not found !",{cause:404}))
         query.brandId = brand._id
     }
-    const result = await paginate({
-        model:Car, 
-        selectFields: role == "admin" ? "" : "-_id",
-        sort:sortBy, 
-        query, 
-        offset, 
-        limit,
-    })
+    // const result = await paginate({
+    //     model:Car, 
+    //     selectFields: role == "admin" ? "" : "-_id",
+    //     sort:sortBy, 
+    //     query, 
+    //     offset, 
+    //     limit,
+    // })
+    const result = await Car.aggregate([{$group:{
+        _id:{name:"$name",yearsOfProduction:"$yearsOfProduction"},
+        count:{$sum:1}
+    }}])
     if(!result.length) return next(new Error("No cars found !",{cause:404}));
     return res.status(200).json({sucess:true,result})
 })
