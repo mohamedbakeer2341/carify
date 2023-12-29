@@ -1,3 +1,3 @@
 export const paginate = async function paginateModel({model, selectFields, query, offset, limit, sort}) {
-    return await model.find(query).select(selectFields).sort(sort).skip(offset).limit(limit)
+    return await model.find(query).select(selectFields).sort(sort).skip(offset).limit(limit).collation({ locale: 'en', strength: 2 })
 }

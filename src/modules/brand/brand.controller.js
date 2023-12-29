@@ -11,6 +11,7 @@ export const getBrands = asyncHandler(async(req,res,next)=>{
     model:Brand, 
     offset,
     limit,
+    sort:{name:1}
     })
     if(!result.length) return next(new Error("No brands found !",{cause:404}))
     return res.status(200).json({success:true,result})
