@@ -11,7 +11,7 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
     const sortOptions = {
         date: "yearsOfProduction",
         sales: "sales",
-        price: "price",
+        price: "avgPrice",
         default: null
     };
     const sortBy = sortOptions[sort] || sortOptions.default;
@@ -28,10 +28,6 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
         offset, 
         limit,
     })
-    // const result = await Car.aggregate([{$group:{
-    //     _id:{name:"$name",yearsOfProduction:"$yearsOfProduction"},
-    //     count:{$sum:1}
-    // }}])
     if(!result.length) return next(new Error("No cars found !",{cause:404}));
     return res.status(200).json({sucess:true,result})
 })
@@ -69,3 +65,4 @@ export const addCar = asyncHandler(async (req, res, next)=>{
     await car.save()
     return res.status(201).json({sucess:true,message:"Car added sucessfully !"})
 })
+
