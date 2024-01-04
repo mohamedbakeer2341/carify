@@ -2,7 +2,6 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { usedCar } from "../../../DB/models/usedCar.model.js";
 import cloudinary from "../../utils/cloud.js"
 import { paginate } from "../../utils/paginate.js"
-import { addUsedCarSchema } from "./usedCar.validation.js";
 
 export const addUsedCar = asyncHandler(async (req,res,next)=>{
     const {id} = req.payload
@@ -59,13 +58,14 @@ export const getUserUsedCars = asyncHandler(async (req,res,next)=>{
 })
 
 export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
-    const {sort, offset, limit, search, type} = req.query
+    const {sort, offset, limit, search, type, city} = req.query
     let query = {
         $or:[
                 { name:{$regex:search ? search : "", $options:'i' }}, 
                 { brand:{$regex:search ? search : "", $options:'i' }}
             ],
     }
+    if (city) query.city = city
     if(type) query.type = type
     const cars = await paginate({
         sort, model:usedCar,
