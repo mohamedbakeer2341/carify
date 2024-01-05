@@ -3,6 +3,10 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { paginate } from "../../utils/paginate.js";
 import { Brand } from "../../../DB/models/brand.model.js";
 import cloudinary from "../../utils/cloud.js";
+import FormData from "form-data"
+import fetch from "node-fetch"
+import axios from "axios"
+import fs from "fs"
 
 export const getFilteredCars = asyncHandler(async (req, res, next) => {
     const { sort, brandName, offset, limit, search } = req.query
@@ -22,7 +26,6 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
     }
     const result = await paginate({
         model:Car, 
-        selectFields: role == "admin" ? "" : "-_id",
         sort:sortBy, 
         query, 
         offset, 
@@ -66,3 +69,21 @@ export const addCar = asyncHandler(async (req, res, next)=>{
     return res.status(201).json({sucess:true,message:"Car added sucessfully !"})
 })
 
+export const detectCar = asyncHandler(async (req, res, next)=>{
+    if(!req.file) return next(new Error("Please send an image !",{cause:400}))
+    const image = req.file.buffer.toString("base64")
+    const checkCarResponse = await fetch("https://actual-happy-elf.ngrok-free.app/check_car_base64/",{ method:"POST", body: JSON.stringify({base64data: image}), headers: {'Content-Type': 'application/json' }})
+    if(!checkCarResponse.ok) return next(new Error("Server error"))
+    const isCar = await checkCarResponse.json()
+    if(!isCar.data.is_car) return next(new Error("Image must be a car"))
+    const response = await fetch("https://actual-happy-elf.ngrok-free.app/classify_image_base64/",{ method:"POST", body:JSON.stringify({"base64data": image}), headers:{"content-type":"application/json" }})
+    const data = await response.json()
+    if(!response.ok) return next(new Error(data.detail))
+    const result = data.data
+    result.brand = result.prediction.split(" ")[0]
+    result.name = result.prediction.split(" ")[1]
+    result.bodyType = result.prediction.split(" ")[2]
+    result.year = result.prediction.split(" ")[3]
+    delete result.prediction
+    return res.status(200).json({success:true, result})
+})
