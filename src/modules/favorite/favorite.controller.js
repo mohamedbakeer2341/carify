@@ -33,7 +33,7 @@ export const deleteFromFavorite = asyncHandler(async (req, res, next)=>{
 
 export const getUserFavorites = asyncHandler(async (req, res, next)=>{
     const {id} = req.payload
-    const result = await Favorite.find({userId:id}).populate("carId").populate("userId", {password:0, isConfirmed:0})
+    const result = await Favorite.findOne({userId:id}).populate("carId")
     if(!result) return next(new Error("No cars found !", {cause:404}))
-    return res.status(200).json({success:true, result})
+    return res.status(200).json({success:true, result: result.carId})
 })
