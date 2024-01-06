@@ -7,9 +7,13 @@ const favoriteSchema = new Schema({
     }],
     userId:{
         type:Types.ObjectId,
-        ref:"User",
+        ref:"Auth",
         required:true,
         unique:true
+    },
+    __v:{
+        type:Number,
+        select:false
     }
 },
 {
