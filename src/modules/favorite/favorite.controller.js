@@ -11,6 +11,8 @@ export const addToFavorite = asyncHandler(async (req, res, next)=>{
     const user = await Auth.findById(userId)
     if(!user) return next(new Error("User not found !",{cause:404}))
     const result = await Favorite.findOne({userId})
+    const index = result.carId.indexOf(id)
+    if(index != -1) return next(new Error("Car already added to favorites !", {cause: 409}))
     result.carId.push(id)
     await result.save()
     return res.json({success:true, message:"Car added successfully !"})
