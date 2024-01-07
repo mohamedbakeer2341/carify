@@ -77,7 +77,7 @@ export const detectCar = asyncHandler(async (req, res, next)=>{
     if(!checkCarResponse.ok) return next(new Error("Server error"))
     const isCar = await checkCarResponse.json()
     if(!isCar.data.is_car) return next(new Error("Image must be a car"))
-    const response = await fetch("https://actual-happy-elf.ngrok-free.app/classify_image_base64/",{ method:"POST", body:JSON.stringify({"base64data": image}), headers:{"content-type":"application/json" }})
+    const response = await fetch("https://actual-happy-elf.ngrok-free.app/classify_image_base64/",{ method:"POST", body:JSON.stringify({base64data: image}), headers:{"content-type":"application/json" }})
     const data = await response.json()
     if(!response.ok) return next(new Error(data.detail))
     const result = data.data
@@ -95,7 +95,7 @@ export const getMostRecentBrandCars = asyncHandler(async (req, res, next)=>{
     let mostRecent = []
     for(const brand of brands) {
         const car = await Car.find({brandId: brand._id}).sort({yearsOfProduction:-1}).limit(1)
-        mostRecent.push({car:car[0], brand: brand.name})
+        mostRecent.push(car[0])
     }
-    res.json({result:mostRecent})
+    res.status(200).json({success:true, result:mostRecent})
 })
