@@ -1,5 +1,5 @@
 import { Router } from "express"
-import { addCar, deleteCar, editCar, getFilteredCars, detectCar } from "./car.controller.js"
+import { addCar, deleteCar, editCar, getFilteredCars, detectCar, getMostRecentBrandCars } from "./car.controller.js"
 import { authenticate } from "../../middlewares/auth.middleware.js"
 import { upload, uploadMemory } from "../../utils/multer.js"
 import { addCarSchema, editCarSchema } from "./car.validation.js"
@@ -13,5 +13,6 @@ router.patch('/:id', authenticate, authorize("admin"), upload().single("image"),
 router.delete('/:id', authenticate, authorize("admin"), deleteCar)
 router.post('/', authenticate, authorize("admin"), upload().single('image'), validate(addCarSchema), addCar)
 router.post('/detect', authenticate, uploadMemory().single('image'), detectCar)
+router.get('/newest', authenticate, getMostRecentBrandCars)
 
 export default router

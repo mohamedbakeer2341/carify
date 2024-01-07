@@ -9,7 +9,7 @@ import axios from "axios"
 import fs from "fs"
 
 export const getFilteredCars = asyncHandler(async (req, res, next) => {
-    const { sort, brandName, offset, limit, search } = req.query
+    const { sort, brandName, offset, limit, search, sortType } = req.query
     const {role} = req.payload
     const query = { name: { $regex: search ? search : "", $options: "i" } }
     const sortOptions = {
@@ -18,15 +18,16 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
         price: "avgPrice",
         default: null
     };
-    const sortBy = sortOptions[sort] || sortOptions.default;
+    let sortBy = sortOptions[sort] || sortOptions.default;
     if(brandName){
         const brand = await Brand.findOne({ name:{$regex:brandName, $options: "i"}})
         if(!brand) return next(new Error("Brand not found !",{cause:404}))
         query.brandId = brand._id
     }
+    if(sortType === "asc") sortBy = '-' + sortBy
     const result = await paginate({
         model:Car, 
-        sort:sortBy, 
+        sort:sortBy,
         query, 
         offset, 
         limit,
@@ -86,4 +87,15 @@ export const detectCar = asyncHandler(async (req, res, next)=>{
     result.year = result.prediction.split(" ")[3]
     delete result.prediction
     return res.status(200).json({success:true, result})
+})
+
+export const getMostRecentBrandCars = asyncHandler(async (req, res, next)=>{
+    const { limit, offset } = req.query
+    const brands = await Brand.find().skip(offset).limit(limit)
+    let mostRecent = []
+    for(const brand of brands) {
+        const car = await Car.find({brandId: brand._id}).sort({yearsOfProduction:-1}).limit(1)
+        mostRecent.push({car:car[0], brand: brand.name})
+    }
+    res.json({result:mostRecent})
 })
