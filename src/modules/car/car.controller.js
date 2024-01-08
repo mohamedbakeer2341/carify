@@ -73,19 +73,15 @@ export const addCar = asyncHandler(async (req, res, next)=>{
 export const detectCar = asyncHandler(async (req, res, next)=>{
     if(!req.file) return next(new Error("Please send an image !",{cause:400}))
     const image = req.file.buffer.toString("base64")
-    const checkCarResponse = await fetch("https://actual-happy-elf.ngrok-free.app/check_car_base64/",{ method:"POST", body: JSON.stringify({base64data: image}), headers: {'Content-Type': 'application/json' }})
-    if(!checkCarResponse.ok) return next(new Error("Server error"))
+    const checkCarResponse = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/check_car_base64/",{ method:"POST", body: JSON.stringify({base64data: image}), headers: {'Content-Type': 'application/json' }})
+    if(!checkCarResponse.ok) return next(new Error("Server error",{cause:500}))
     const isCar = await checkCarResponse.json()
     if(!isCar.data.is_car) return next(new Error("Image must be a car"))
-    const response = await fetch("https://actual-happy-elf.ngrok-free.app/classify_image_base64/",{ method:"POST", body:JSON.stringify({base64data: image}), headers:{"content-type":"application/json" }})
+    const response = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/classify_image_base64/",{ method:"POST", body:JSON.stringify({base64data: image}), headers:{"content-type":"application/json" }})
     const data = await response.json()
     if(!response.ok) return next(new Error(data.detail))
     const result = data.data
-    result.brand = result.prediction.split(" ")[0]
-    result.name = result.prediction.split(" ")[1]
-    result.bodyType = result.prediction.split(" ")[2]
-    result.year = result.prediction.split(" ")[3]
-    delete result.prediction
+    result.probability = Math.round(result.probability*100)
     return res.status(200).json({success:true, result})
 })
 
