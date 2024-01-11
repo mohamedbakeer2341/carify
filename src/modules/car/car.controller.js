@@ -3,14 +3,10 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { paginate } from "../../utils/paginate.js";
 import { Brand } from "../../../DB/models/brand.model.js";
 import cloudinary from "../../utils/cloud.js";
-import FormData from "form-data"
 import fetch from "node-fetch"
-import axios from "axios"
-import fs from "fs"
 
 export const getFilteredCars = asyncHandler(async (req, res, next) => {
     const { sort, brandName, offset, limit, search, sortType } = req.query
-    const {role} = req.payload
     const query = { name: { $regex: search ? search : "", $options: "i" } }
     const sortOptions = {
         date: "yearsOfProduction",
@@ -24,7 +20,7 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
         if(!brand) return next(new Error("Brand not found !",{cause:404}))
         query.brandId = brand._id
     }
-    if(sortType === "asc") sortBy = '-' + sortBy
+    if(sort && sortType === "desc") sortBy = '-' + sortBy
     const result = await paginate({
         model:Car, 
         sort:sortBy,
@@ -67,7 +63,7 @@ export const addCar = asyncHandler(async (req, res, next)=>{
     const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:car._id})
     car.image = image.secure_url
     await car.save()
-    return res.status(201).json({sucess:true,message:"Car added sucessfully !"})
+    return res.status(201).json({success:true,message:"Car added sucessfully !"})
 })
 
 export const detectCar = asyncHandler(async (req, res, next)=>{
@@ -76,7 +72,7 @@ export const detectCar = asyncHandler(async (req, res, next)=>{
     const checkCarResponse = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/check_car_base64/",{ method:"POST", body: JSON.stringify({base64data: image}), headers: {'Content-Type': 'application/json' }})
     if(!checkCarResponse.ok) return next(new Error("Server error",{cause:500}))
     const isCar = await checkCarResponse.json()
-    if(!isCar.data.is_car) return next(new Error("Image must be a car"))
+    if(!isCar.data.is_car) return next(new Error("Image must be a car !"))
     const response = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/classify_image_base64/",{ method:"POST", body:JSON.stringify({base64data: image}), headers:{"content-type":"application/json" }})
     const data = await response.json()
     if(!response.ok) return next(new Error(data.detail))

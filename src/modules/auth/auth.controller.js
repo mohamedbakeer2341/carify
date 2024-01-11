@@ -38,7 +38,7 @@ export const activateAccount = asyncHandler(async(req,res,next)=>{
     const name = capitalizeFirstLetter(user.firstName)
     const mail = await sendEmail({to:user.email,subject:"Email Activated",html:accountActivatedTemp(name)})
     if(!mail) return next(new Error("Email not found !",{cause:404}))
-    return res.status(200).json({success:true,message:"Account activated successfully !"})
+    return res.status(200).json({success:true, message:"Account activated successfully !"})
 })
 
 export const login = asyncHandler(async(req,res,next)=>{
@@ -53,7 +53,7 @@ export const login = asyncHandler(async(req,res,next)=>{
     await user.save()
     const token = jwt.sign({email:user.email,id:user._id,role:user.role},process.env.SECRET_KEY)
     await Token.create({token,userId:user._id,agent})
-    return res.status(200).json({success:true,token})
+    return res.status(200).json({success:true, token})
 })
 
 export const sendForgetCode = asyncHandler(async(req, res, next) => {
@@ -73,7 +73,7 @@ export const sendForgetCode = asyncHandler(async(req, res, next) => {
         html:sendForgetCodeTemp({forgetCode,name})
     })
     if(!mail) return next(new Error("Email not found !",{cause:404}))
-    return res.status(200).json({success:true,message:"Check your email for the code !"})
+    return res.status(200).json({success:true, message:"Check your email for the code !"})
 })
 
 export const resetPassword = asyncHandler(async(req, res, next) => {
@@ -91,7 +91,7 @@ export const resetPassword = asyncHandler(async(req, res, next) => {
         html:passwordResetTemp(name)
     })
     if(!mail) return next(new Error("Email not found !",{cause:404}))
-    return res.status(200).json({success:true,message:"Password reset successfully !"})
+    return res.status(200).json({success:true, message:"Password reset successfully !"})
 })
 
 export const changePassword = asyncHandler(async(req, res, next) =>{
@@ -112,21 +112,21 @@ export const changePassword = asyncHandler(async(req, res, next) =>{
         html:passwordResetTemp(name)
     })
     if(!mail) return next(new Error("Email not found !",{cause:404}))
-    return res.status(200).json({success:true,message:"Password changed successfully"})
+    return res.status(200).json({success:true, message:"Password changed successfully"})
 })
 
 export const getProfile = asyncHandler(async(req, res, next)=>{
     const {id} = req.payload
     const result = await Auth.findById(id).select('-_id -forgetCode -password -__v')
     if(!result) return next(new Error("User not found !",{cause:404}))
-    return res.status(200).json({success:true,result})
+    return res.status(200).json({success:true, result})
 })
 
 export const changeAccountDetails = asyncHandler(async(req,res,next)=>{
     const {id} = req.payload
     const user = await Auth.findByIdAndUpdate(id,req.body)
     if(!user) return next(new Error("User not found !",{cause:404}))
-    return res.status(200).json({sucess:true,message:"Account details updated successfully"})
+    return res.status(200).json({success:true,message:"Account details updated successfully"})
 })
 //check if profile picture replaced in the cloud
 export const uploadProfilePicture = asyncHandler(async(req,res,next)=>{
@@ -137,7 +137,7 @@ export const uploadProfilePicture = asyncHandler(async(req,res,next)=>{
     const result = await cloudinary.uploader.upload(req.file.path,{folder:'/project/user',public_id:id})
     user.profilePicture = result.secure_url
     await user.save()
-    return res.status(200).json({sucess:true,message:"Profile picture updated successfully !"})
+    return res.status(200).json({success:true,message:"Profile picture updated successfully !"})
 })
 
 export const signOut = asyncHandler(async(req,res,next)=>{
@@ -147,5 +147,5 @@ export const signOut = asyncHandler(async(req,res,next)=>{
     if(!user) return next(new Error("User not found !",{cause:404}))
     const result = await Token.findOneAndUpdate({token},{isValid:false})
     if(!result) return next(new Error("Token not found !",{cause:404}))
-    return res.status(200).json({sucess:true,message:"Signed out successfully !"})
+    return res.status(200).json({success:true,message:"Signed out successfully !"})
 })

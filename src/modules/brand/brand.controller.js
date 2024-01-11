@@ -41,7 +41,7 @@ export const editBrand = asyncHandler(async(req,res,next)=>{
     brand.logo = image.secure_url
     await brand.save()
     }
-    return res.status(200).json({sucess:true,message:"Brand updated successfully !"})
+    return res.status(200).json({success:true,message:"Brand updated successfully !"})
 })
 
 export const deleteBrand = asyncHandler(async(req,res,next)=>{
@@ -50,5 +50,5 @@ export const deleteBrand = asyncHandler(async(req,res,next)=>{
     const brand = await Brand.findByIdAndDelete(id)
     if(!brand) return next(new Error("Brand not found !",{cause:404}))
     const image = await cloudinary.uploader.destroy(public_id)
-    return res.status(200).json({sucess:true,message:"Brand deleted successfully !"})
+    return res.status(200).json({success:true,message:"Brand deleted successfully !"})
 })

@@ -5,10 +5,10 @@ import { paginate } from "../../utils/paginate.js"
 
 export const addUsedCar = asyncHandler(async (req,res,next)=>{
     const {id} = req.payload
-    const { duration, type, ...data } = req.body
+    const { years, months, days, type, ...data } = req.body
     if(type === "rent"){
-        if(!duration) return next(new Error("Duration is required for rent cars !",{cause:400}))
-        data.duration = duration
+        if(!years && !months && !days) return next(new Error("Duration is required for rent cars !",{cause:400}))
+        data.duration = (years*365) + (months*30) + days
     }
     if(!req.files.length) return next(new Error("Images is required !",{cause:404}))
     const car = await usedCar.create({userId:id, type, ...data})
@@ -54,24 +54,50 @@ export const getUserUsedCars = asyncHandler(async (req,res,next)=>{
     const {id} = req.payload
     const cars = await usedCar.find({userId:id})
     if(!cars.length) return next(new Error("No used cars found !",{cause:404}))
-    return res.status(200).json({sucess:true,result:cars})
+    return res.status(200).json({success:true,result:cars})
 })
 
 export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
-    const {sort, offset, limit, search, type, city} = req.query
+    const {sort, offset, limit, search, type, city, sortType} = req.query
     let query = {
         $or:[
                 { name:{$regex:search ? search : "", $options:'i' }}, 
                 { brand:{$regex:search ? search : "", $options:'i' }}
             ],
     }
+    const sortOptions = {
+        price: "price",
+        date: "createdAt",
+        duration: "duration",
+        distance: "distance",
+        default: null
+    }
+    let sortBy = sortOptions[sort] || sortOptions.default
+    if(sort && sortType === "desc") sortBy = "-" + sortBy
     if (city) query.city = city
     if(type) query.type = type
     const cars = await paginate({
-        sort, model:usedCar,
+        sort: sortBy, 
+        model:usedCar,
         query, 
         offset, 
-        limit })
+        limit 
+    })
+    const result = cars.map(car => {
+        car = car.toObject()
+        let duration = car.duration;
+        let years = Math.floor(duration / 365);
+        duration %= 365
+        let months = Math.floor(duration / 30);
+        duration %= 30
+        let days = duration
+        car.years = years
+        car.months = months
+        car.days = days
+        delete car.duration
+        return car
+    })
+    
     if(!cars.length) return next(new Error("No used cars found !",{cause:404}))
-    return res.status(200).json({sucess:true,cars})
+    return res.status(200).json({success:true, result})
 })
