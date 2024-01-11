@@ -56,6 +56,10 @@ const usedCarSchema = new Schema({
         type:String,
         required:true
     },
+    durationType:{
+        type: String,
+        enum:["days", "months", "years"]
+    },
     type:{
         type:String,
         enum:["sell","rent"],

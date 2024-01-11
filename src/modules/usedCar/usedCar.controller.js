@@ -6,10 +6,11 @@ import fetch from "node-fetch";
 
 export const addUsedCar = asyncHandler(async (req,res,next)=>{
     const {id} = req.payload
-    const { years, months, days, type, ...data } = req.body
+    const { duration, durationType, type, ...data } = req.body
     if(type === "rent"){
-        if(!years && !months && !days) return next(new Error("Duration is required for rent cars !",{cause:400}))
-        data.duration = (years*365) + (months*30) + days
+        if(!duration || !durationType) return next(new Error("Duration and duration type required for rent cars !",{cause:400}))
+        data.duration = duration
+        data.durationType = durationType
     }
     if(!req.files.length) return next(new Error("Images is required !",{cause:404}))
     const car = await usedCar.create({userId:id, type, ...data})
@@ -69,7 +70,6 @@ export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
     const sortOptions = {
         price: "price",
         date: "createdAt",
-        duration: "duration",
         distance: "distance",
         speed: "topSpeed",
         default: null
@@ -86,20 +86,6 @@ export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
         limit,
         populate : {path:"userId", select : "firstName lastName email profilePicture gender"},
     })
-    const result = cars.map(car => {
-        car = car.toObject()
-        let duration = car.duration;
-        let years = Math.floor(duration / 365);
-        duration %= 365
-        let months = Math.floor(duration / 30);
-        duration %= 30
-        let days = duration
-        car.years = years
-        car.months = months
-        car.days = days
-        delete car.duration
-        return car
-    })
     if(!cars.length) return next(new Error("No used cars found !",{cause:404}))
-    return res.status(200).json({success:true, result})
+    return res.status(200).json({success:true, cars})
 })
