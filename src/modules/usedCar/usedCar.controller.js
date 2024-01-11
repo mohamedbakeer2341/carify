@@ -2,6 +2,7 @@ import { asyncHandler } from "../../utils/asyncHandler.js";
 import { usedCar } from "../../../DB/models/usedCar.model.js";
 import cloudinary from "../../utils/cloud.js"
 import { paginate } from "../../utils/paginate.js"
+import fetch from "node-fetch";
 
 export const addUsedCar = asyncHandler(async (req,res,next)=>{
     const {id} = req.payload
@@ -17,7 +18,7 @@ export const addUsedCar = asyncHandler(async (req,res,next)=>{
         car.images.push({secure_url:image.secure_url,public_id:image.public_id})
     };
     await car.save()
-    return res.status(201).json({success:true,message:"Car added successfully !"})
+    return res.status(201).json({success:true, message:"Car added successfully !"})
 })
 
 export const editUsedCar = asyncHandler(async (req,res,next)=>{
@@ -70,6 +71,7 @@ export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
         date: "createdAt",
         duration: "duration",
         distance: "distance",
+        speed: "topSpeed",
         default: null
     }
     let sortBy = sortOptions[sort] || sortOptions.default
@@ -81,7 +83,8 @@ export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
         model:usedCar,
         query, 
         offset, 
-        limit 
+        limit,
+        populate : {path:"userId", select : "firstName lastName email profilePicture gender"},
     })
     const result = cars.map(car => {
         car = car.toObject()
@@ -97,7 +100,6 @@ export const getFilteredUsedCars = asyncHandler(async (req,res,next)=>{
         delete car.duration
         return car
     })
-    
     if(!cars.length) return next(new Error("No used cars found !",{cause:404}))
     return res.status(200).json({success:true, result})
 })

@@ -63,7 +63,7 @@ const usedCarSchema = new Schema({
     },
     userId:{
         type:Types.ObjectId,
-        ref:"User"
+        ref:"Auth"
     }
 })
 
