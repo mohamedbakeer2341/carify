@@ -70,7 +70,10 @@ const carSchema = new Schema({
         name:String,
         phone:String,
         price:Number,
-    }]
+        stock:Number,
+        isFullOption:Boolean
+    }],
+    colors:[String]
     ,
     sales: Number,
     bodyType: { type: String, default: null },

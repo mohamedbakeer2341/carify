@@ -15,7 +15,7 @@ export const addUsedCarSchema = joi.object({
     location : joi.string().required(),
     description : joi.string().max(5000),
     phone : joi.string().required(),
-    topSpeed : joi.number().min(50).max(450),
+    topSpeed : joi.number().min(50).max(450).required(),
     type: joi.string().valid("sell","rent").required(),
 }).required()
 

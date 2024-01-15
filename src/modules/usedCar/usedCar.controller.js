@@ -13,11 +13,23 @@ export const addUsedCar = asyncHandler(async (req,res,next)=>{
         data.durationType = durationType
     }
     if(!req.files.length) return next(new Error("Images is required !",{cause:404}))
+    const carsBase64 = req.files.map(file => {return {base64data: file.buffer.toString("base64")}})
+    const response = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/check_car_base64_list",{body:JSON.stringify({images: carsBase64}), method:"POST", headers: {'Content-Type': 'application/json'}})
+    if(!response.ok) return next(new Error(`Unexpected response ${response.statusText} !`,{cause:500}))
+    const responseData = await response.json()
+    const isCars = responseData.data.filter(el => el.is_car !== true)
+    if(isCars.length) return next(new Error("All images must be cars !", {cause:400}))
     const car = await usedCar.create({userId:id, type, ...data})
     for (const file of req.files){
-        const image = await cloudinary.uploader.upload(file.path,{folder:"project/usedCar/images/"})
-        car.images.push({secure_url:image.secure_url,public_id:image.public_id})
-    };
+    let base64Image
+    if(file.mimetype === 'image/jpeg' || file.mimeType === 'image/jpg') {
+        base64Image = 'data:image/jpeg;base64,' + file.buffer.toString("base64");
+    } else if(file.mimetype === 'image/png') {
+        base64Image = 'data:image/png;base64,' + file.buffer.toString("base64");
+    }
+    const image = await cloudinary.uploader.upload(base64Image, {folder:"project/usedCar/images/"})
+    car.images.push({secure_url:image.secure_url,public_id:image.public_id})
+    }
     await car.save()
     return res.status(201).json({success:true, message:"Car added successfully !"})
 })
@@ -32,8 +44,20 @@ export const editUsedCar = asyncHandler(async (req,res,next)=>{
     const car = await usedCar.findOneAndUpdate({_id:carId,userId:id},{type,...data})
     if(!car) return next(new Error("Car not found !",{cause:404}))
     if(req.files.length){
+        const carsBase64 = req.files.map(file => {return {base64data: file.buffer.toString("base64")}})
+        const response = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/check_car_base64_list",{body:JSON.stringify({images: carsBase64}), method:"POST", headers: {'Content-Type': 'application/json'}})
+        if(!response.ok) return next(new Error(`Unexpected response ${response.statusText} !`,{cause:500}))
+        const responseData = await response.json()
+        const isCars = responseData.data.filter(el => el.is_car !== true)
+        if(isCars.length) return next(new Error("All images must be cars !", {cause:400}))
         for (const file of req.files){
-            const image = await cloudinary.uploader.upload(file.path,{folder:"project/usedCar/images/"})
+            let base64Image
+            if(file.mimetype === 'image/jpeg' || file.mimeType === 'image/jpg') {
+                base64Image = 'data:image/jpeg;base64,' + file.buffer.toString("base64");
+            } else if(file.mimetype === 'image/png') {
+                base64Image = 'data:image/png;base64,' + file.buffer.toString("base64");
+            }
+            const image = await cloudinary.uploader.upload(base64Image, {folder:"project/usedCar/images/"})
             car.images.push({secure_url:image.secure_url,public_id:image.public_id})
         };
         await car.save()

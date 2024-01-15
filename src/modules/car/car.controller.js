@@ -16,7 +16,7 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
     };
     let sortBy = sortOptions[sort] || sortOptions.default;
     if(brandName){
-        const brand = await Brand.findOne({ name:{$regex:brandName, $options: "i"}})
+        const brand = await Brand.findOne({ name:{$regex:brandName, $options: "i" }})
         if(!brand) return next(new Error("Brand not found !",{cause:404}))
         query.brandId = brand._id
     }
@@ -29,7 +29,7 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
         limit,
     })
     if(!result.length) return next(new Error("No cars found !",{cause:404}));
-    return res.status(200).json({sucess:true,result})
+    return res.status(200).json({success:true,result})
 })
 
 export const deleteCar = asyncHandler(async (req, res, next)=>{
@@ -70,12 +70,13 @@ export const detectCar = asyncHandler(async (req, res, next)=>{
     if(!req.file) return next(new Error("Please send an image !",{cause:400}))
     const image = req.file.buffer.toString("base64")
     const checkCarResponse = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/check_car_base64/",{ method:"POST", body: JSON.stringify({base64data: image}), headers: {'Content-Type': 'application/json' }})
-    if(!checkCarResponse.ok) return next(new Error("Server error",{cause:500}))
+    if(!checkCarResponse.ok) return next(new Error(`Unexpected response ${checkCarResponse.statusText} !`,{cause:500}))
     const isCar = await checkCarResponse.json()
-    if(!isCar.data.is_car) return next(new Error("Image must be a car !"))
+    if(!isCar.data.is_car) return next(new Error("Image must be a car !", {cause:400}))
     const response = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/classify_image_base64/",{ method:"POST", body:JSON.stringify({base64data: image}), headers:{"content-type":"application/json" }})
     const data = await response.json()
-    if(!response.ok) return next(new Error(data.detail))
+    if(!response.ok) return next(new Error(`Unexpected response ${response.statusText} !`,{cause:500}))
+    if(!data.data) return next(new Error("Error detecting car",{cause:500}))
     const result = data.data
     result.probability = Math.round(result.probability*100)
     return res.status(200).json({success:true, result})
@@ -89,5 +90,6 @@ export const getMostRecentBrandCars = asyncHandler(async (req, res, next)=>{
         const car = await Car.find({brandId: brand._id}).sort({yearsOfProduction:-1}).limit(1)
         mostRecent.push(car[0])
     }
-    res.status(200).json({success:true, result:mostRecent})
+    if(!mostRecent.length) return next(new Error("No cars found",{cause:404}))
+    return res.status(200).json({success:true, result:mostRecent})
 })
