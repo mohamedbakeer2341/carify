@@ -62,7 +62,7 @@ export const editUsedCar = asyncHandler(async (req,res,next)=>{
         };
         await car.save()
     }
-    return res.status(200).json({success:true,message:"Car added successfully !"})
+    return res.status(200).json({success:true,message:"Car updated successfully !"})
 })
 
 export const deleteUsedCar = asyncHandler(async (req,res,next)=>{

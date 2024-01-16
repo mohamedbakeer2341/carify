@@ -29,7 +29,7 @@ export const getFilteredCars = asyncHandler(async (req, res, next) => {
         limit,
     })
     if(!result.length) return next(new Error("No cars found !",{cause:404}));
-    return res.status(200).json({success:true,result})
+    return res.status(200).json({success:true, result})
 })
 
 export const deleteCar = asyncHandler(async (req, res, next)=>{
@@ -63,7 +63,7 @@ export const addCar = asyncHandler(async (req, res, next)=>{
     const image = await cloudinary.uploader.upload(req.file.path,{folder:"project/cars/image/",public_id:car._id})
     car.image = image.secure_url
     await car.save()
-    return res.status(201).json({success:true,message:"Car added sucessfully !"})
+    return res.status(201).json({success:true,message:"Car added successfully !"})
 })
 
 export const detectCar = asyncHandler(async (req, res, next)=>{
@@ -76,7 +76,7 @@ export const detectCar = asyncHandler(async (req, res, next)=>{
     const response = await fetch("https://elnakeeb.westeurope.cloudapp.azure.com/classify_image_base64/",{ method:"POST", body:JSON.stringify({base64data: image}), headers:{"content-type":"application/json" }})
     const data = await response.json()
     if(!response.ok) return next(new Error(`Unexpected response ${response.statusText} !`,{cause:500}))
-    if(!data.data) return next(new Error("Error detecting car",{cause:500}))
+    if(!data.data) return next(new Error("Error detecting car !",{cause:500}))
     const result = data.data
     result.probability = Math.round(result.probability*100)
     return res.status(200).json({success:true, result})
@@ -90,6 +90,6 @@ export const getMostRecentBrandCars = asyncHandler(async (req, res, next)=>{
         const car = await Car.find({brandId: brand._id}).sort({yearsOfProduction:-1}).limit(1)
         mostRecent.push(car[0])
     }
-    if(!mostRecent.length) return next(new Error("No cars found",{cause:404}))
+    if(!mostRecent.length) return next(new Error("No cars found !",{cause:404}))
     return res.status(200).json({success:true, result:mostRecent})
 })

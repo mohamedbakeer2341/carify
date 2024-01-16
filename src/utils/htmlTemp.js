@@ -2,62 +2,46 @@ export const sendActivationLinkTemp = ({activationLink,name})=>{
     const html = `<!DOCTYPE html>
     <html>
     <head>
-        <title>Account Activation</title>
+        <title>Account Activation Email</title>
         <style>
-            .header {
-                background-color: #007bff;
-                color: white;
+            body {
+                font-family: Arial, sans-serif;
+            }
+            .email-container {
+                width: 80%;
+                margin: 0 auto;
                 padding: 20px;
-                text-align: center;
-                font-size: 20px;
-                font-weight: bold;
-            }
-    
-            .button {
-                display: inline-block;
-                background-color: #007bff;
-                color: white;
-                padding: 12px 20px;
-                text-decoration: none;
+                background-color: #f7f7f7;
                 border-radius: 5px;
-                margin: 10px 0;
+                box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
             }
-    
-            .button-container {
-                text-align: center;
+            .email-container h1 {
+                color: #333;
             }
-    
-            .link {
-                color: #007bff;
+            .email-container p {
+                color: #666;
+            }
+            .email-container a {
+                display: inline-block;
+                color: #fff;
+                background-color: #494C4C;
+                padding: 10px 15px;
                 text-decoration: none;
-            }
-    
-            .link:hover {
-                color: #0056b3;
-                text-decoration: underline;
+                border-radius: 3px;
+                margin-top: 10px;
             }
         </style>
     </head>
     <body>
-        <table width="100%" border="0" cellspacing="0" cellpadding="0">
-            <tr>
-                <td class="header">Account Activation</td>
-            </tr>
-            <tr>
-                <td>
-                    <h2>Hello ${name},</h2>
-                    <p>Thank you for registering on our site. Please click on the button or the link below to activate your account:</p>
-                    <div class="button-container">
-                        <a href="${activationLink}" class="button">Activate Account</a>
-                    </div>
-                    <p>Or copy and paste this link into your browser:</p>
-                    <p><a href="${activationLink}" class="link">${activationLink}</a></p>
-                    <p>If you did not register on our site, please ignore this email.</p>
-                    <p>Best,</p>
-                    <strong>Carify</strong>
-                </td>
-            </tr>
-        </table>
+        <div class="email-container">
+            <h1>Welcome to Our Website!</h1>
+            <p>Dear ${name},</p>
+            <p>Thank you for registering. Please click the link below to activate your account:</p>
+            <a href=${activationLink}>Activate Account</a>
+            <p>If you did not request this, please ignore this email.</p>
+            <p>Best,</p>
+            <p>Your Website Team</p>
+        </div>
     </body>
     </html>    
     `
@@ -137,59 +121,45 @@ export const sendForgetCodeTemp = ({name,forgetCode})=>{
     const html =`<!DOCTYPE html>
     <html>
     <head>
-        <title>Password Reset Code</title>
+        <title>Password Reset Email</title>
         <style>
             body {
                 font-family: Arial, sans-serif;
             }
-            .container {
+            .email-container {
                 width: 80%;
-                margin: auto;
-                background-color: #f8f9fa;
+                margin: 0 auto;
                 padding: 20px;
+                background-color: #f7f7f7;
                 border-radius: 5px;
+                box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.1);
             }
-            .top-bar {
-                background-color: #007bff;
-                height: 60px;
-                color: white;
-                text-align: center;
-                padding: 20px 0 0  ;
-                font-weight: bold;
-                font-size: 40px;
-                width: 100%;
+            .email-container h1 {
+                color: #333;
             }
-            .code {
-                font-size: 42px;
-                color: #007bff;
-                margin: 10px auto;
-                text-align: center;
-                background-color: #e9ecef;
-                padding: 20px;
-                border-radius: 5px;
+            .email-container p {
+                color: #666;
+            }
+            .email-container .code {
                 display: inline-block;
-            }
-            .center {
-                display: flex;
-                justify-content: center;
-            }
-            .team {
-                font-size: 20px;
-                font-weight: bold;
+                color: #fff;
+                background-color: #494C4C;
+                padding: 10px 15px;
+                text-decoration: none;
+                border-radius: 3px;
+                margin-top: 10px;
             }
         </style>
     </head>
     <body>
-        <div class="container">
-            <div class="top-bar">Password Reset Code</div>
-            <h2>Hello, ${name}</h2>
-            <p>Your forget code is:</p>
-            <div class="center">
-                <div class="code">${forgetCode}</div>
-            </div>
-            <p>If you did not request a password reset, please ignore this email.</p>
+        <div class="email-container">
+            <h1>Password Reset Request</h1>
+            <p>Dear ${name},</p>
+            <p>We received a request to reset your password. Here is your password reset code:</p>
+            <p class="code">${forgetCode}</p>
+            <p>Please enter this code in the provided field to reset your password. If you did not request this, please ignore this email.</p>
             <p>Best,</p>
-            <p class="team">Carify</p>
+            <p>Carify</p>
         </div>
     </body>
     </html>
