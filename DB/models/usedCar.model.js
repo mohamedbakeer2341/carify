@@ -65,6 +65,10 @@ const usedCarSchema = new Schema({
         enum:["sell","rent"],
         required:true
     },
+    topSpeed:{
+        type:Number,
+        required:true
+    },
     userId:{
         type:Types.ObjectId,
         ref:"Auth"
